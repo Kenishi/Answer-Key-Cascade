@@ -1,6 +1,6 @@
 ﻿"""Name: Answer Key Cascade
 Filename: Answer_Key_Cascade.py
-Version: 0.2
+Version: 0.3
 Author: Kenishi
 Desc:	By defualt Anki 2 now reduces the button count depending on card age.
 		Cards can now have anywhere from 2 to 4 buttons max depending on age.
@@ -11,7 +11,7 @@ Desc:	By defualt Anki 2 now reduces the button count depending on card age.
 """
 from PyQt4.QtCore import *from PyQt4.QtGui import *from aqt import mw
 ### Key Dictionary for new answer ###
-KEYS = {2:(Qt.Key_2,u'2'),		3:(Qt.Key_3,u'3')}
-def KeyRemap_keyPressEvent(evt):	if mw.reviewer.state == "answer": # Check if we're in answer		cnt = mw.col.sched.answerButtons(mw.reviewer.card) # Get button count		if evt.text() > str(cnt): # Was our answer larger than the max button count?			key, text = KEYS.get(cnt,(evt.key(),evt.text()))			evt = QKeyEvent(QEvent.KeyRelease, key, evt.modifiers(), text, evt.isAutoRepeat(), evt.count()) # Modify answer to reflect that we wanted the max answer	return oldPressevent(evt)	
+KEYS = {2:(Qt.Key_2,u'2'),		3:(Qt.Key_3,u'3')}def isLarger(text,cnt):	num = 0	try:		num = int(text)	except ValueError:		return False	if num > cnt and (num >=1 and num <=4):		return True	else:		return False
+def KeyRemap_keyPressEvent(evt):	if mw.reviewer.state == "answer": # Check if we're in answer		cnt = mw.col.sched.answerButtons(mw.reviewer.card) # Get button count		if isLarger(evt.text(), cnt): # Was our answer larger than the max button count?			key, text = KEYS.get(cnt,(evt.key(),evt.text()))			evt = QKeyEvent(QEvent.KeyRelease, key, evt.modifiers(), text, evt.isAutoRepeat(), evt.count()) # Modify answer to reflect that we wanted the max answer	return oldPressevent(evt)	
 ### Wrap old keyPressEvent with our new one
 oldPressevent = mw.keyPressEventmw.keyPressEvent = KeyRemap_keyPressEvent
